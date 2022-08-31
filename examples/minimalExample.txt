@@ -1,0 +1,34 @@
+#### GENERAL ####
+i:Ts/Seed =  1  #starting random seed 
+i:Ts/NumberOfThreads = -1
+b:Ts/DumpParameters = "True" 
+Ts/PauseBeforeQuit = "False"
+
+#### GUI ####
+s:Gr/ViewA/Type = "OpenGL"
+i:Gr/ViewA/WindowSizeX = 1200
+i:Gr/ViewA/WindowSizeY = 1000
+u:Gr/ViewA/Zoom = 2.
+Ts/UseQt = "True"
+
+
+#### WORLD ####
+s:Ge/World/Type = "TsBox"
+d:Ge/World/HLX = 10. um
+d:Ge/World/HLY = 10. um
+d:Ge/World/HLZ = 10. um
+s:Ge/World/Material = "Vacuum"
+
+
+#### GEOMETRY ####
+s:Ge/Capillary/Parent = "World"
+s:Ge/Capillary/Type="TsBioSAXSdosimetry"
+s:Ge/Capillary/Material= "G4_SILICON_DIOXIDE"
+s:Ge/Capillary/TargetSphere/Material="G4_WATER"
+d:Ge/Capillary/OuterRadius= 5.0 um
+d:Ge/Capillary/InnerRadius= 4.0 um
+d:Ge/Capillary/Length= 8.0 um
+d:Ge/Capillary/TargetRadius= 0.1 um
+i:Ge/Capillary/Targets= 100
+
+
