@@ -34,8 +34,7 @@ TsVGeometryComponent(pM, eM, mM, gM, parentComponent, parentVolume, name)
     tmpCoordinates.resize(4);
     TargetCoordinates.resize(0);
     ResolveParameters();
-
-   
+  
 }
 
 
@@ -50,7 +49,6 @@ void TsBioSAXSdosimetry::ResolveParameters() {
 
     TargetRadius  = fPm->GetDoubleParameter(GetFullParmName("TargetRadius"), "Length");
     NumberOfTargets  = fPm->GetIntegerParameter(GetFullParmName("Targets"));
-    //TargetCoordinates.resize(NumberOfTargets);
 }
 
 
@@ -68,8 +66,6 @@ G4VPhysicalVolume* TsBioSAXSdosimetry::Construct()
     fEnvelopeLog = CreateLogicalVolume(gCapillary);
     fEnvelopePhys = CreatePhysicalVolume(fEnvelopeLog);
 
-
-
     //*******************************
     // Subcomponent: TargetSphere
     //*******************************
@@ -80,12 +76,9 @@ G4VPhysicalVolume* TsBioSAXSdosimetry::Construct()
     //Randomly distribute TargetSpheres throughout the capillary volume
     for (int m = 0; m < NumberOfTargets; m++){
             
-        G4cout << "** Add TargetSphere  " << m <<  " **" << G4endl;
-
             G4VPhysicalVolume* pTargetSphere = CreatePhysicalVolume("TargetSphere", m, true, lTargetSphere, rotationMatrix, AddTargetSphereToCapillary(), fEnvelopePhys);
         }
     
-
     G4cout << "*** Total target spheres in capillary  : " << TargetCoordinates.size() <<" ***" <<G4endl;
     InstantiateChildren(fEnvelopePhys);
 	return fEnvelopePhys;
@@ -110,7 +103,6 @@ G4ThreeVector* TsBioSAXSdosimetry::AddTargetSphereToCapillary(){
         G4double z =  length - (maxLengthCoordinate/2.0);
         
         if (CheckOverlapOfSphereWithComponents(TargetCoordinates, TargetRadius,x,y,z)){
-                    G4cout << "*** overlap checked ***" <<G4endl;
 
             placementAttempts ++;
             if (placementAttempts > placementAttemptsWarning){
@@ -130,7 +122,6 @@ G4ThreeVector* TsBioSAXSdosimetry::AddTargetSphereToCapillary(){
 
 
 G4bool TsBioSAXSdosimetry::CheckOverlapOfSphereWithComponents(std::vector<std::vector<G4double> >& Coordinates,G4double r, G4double x, G4double y, G4double z){
-        G4cout << "*** check overlap ***" <<G4endl;
 
     for(int i=0; i<Coordinates.size(); i++){
         
@@ -143,7 +134,6 @@ G4bool TsBioSAXSdosimetry::CheckOverlapOfSphereWithComponents(std::vector<std::v
 
 
 void TsBioSAXSdosimetry::AddCoordinates(std::vector<std::vector<G4double> >& Coordinates, G4double r, G4double x, G4double y, G4double z){
-    G4cout << "*** add coordinates ***" <<G4endl;
     tmpCoordinates[0]=r;
     tmpCoordinates[1]=x;
     tmpCoordinates[2]=y;
