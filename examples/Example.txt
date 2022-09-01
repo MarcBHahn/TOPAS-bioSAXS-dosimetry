@@ -1,0 +1,116 @@
+#### GENERAL ####
+i:Ts/Seed =  1  #starting random seed 
+i:Ts/NumberOfThreads = 1
+b:Ts/DumpParameters = "True" 
+Ts/PauseBeforeQuit = "True"
+
+####  PHYSICS ####
+
+b:Ph/ListProcesses = "True"
+s:Ph/MyPhysics/Type = "Geant4_Modular"
+sv:Ph/MyPhysics/Modules = 1 "g4em-livermore"    #"g4h-phy_QGSP_BIC_HP" "g4decay" "g4ion-binarycascade" "g4h-elastic_HP" "g4stopping"
+b:Ph/MyPhysics/Fluorescence = "True" # Set to true to turn on Fluorescence
+b:Ph/MyPhysics/Auger = "True" # Set to true to turn on Auger
+b:Ph/MyPhysics/AugerCascade = "True" # Set to true to turn on PIXE
+b:Ph/MyPhysics/PIXE = "True" # Set to true to turn on PIXE
+d:Ph/MyPhysics/CutForAllParticles = 1000 nm 
+
+
+
+#### GUI ####
+#s:Gr/ViewA/Type             = "OpenGL"
+#s:Gr/ViewA/CenterOn = "Capillary"
+#i:Gr/ViewA/WindowSizeX      = 1800  
+#i:Gr/ViewA/WindowSizeY      = 1000
+#d:Gr/ViewA/Theta            = 55 deg
+#d:Gr/ViewA/Phi              = 35 deg
+#s:Gr/ViewA/Projection       = "Perspective"
+#d:Gr/ViewA/PerspectiveAngle = 30 deg
+#u:Gr/ViewA/Zoom             = 1.0
+#b:Gr/ViewA/HiddenLineRemovalForTrajectories = "True"
+#b:Gr/ViewA/IncludeAxes = "True" # defaults to "False"
+#s:Gr/ViewA/AxesComponent = "World" 
+#d:Gr/ViewA/AxesSize = 2. mm # size of axes
+#s:Gr/ViewA/ColorBy     = "ParticleType"
+#sv:Gr/ViewA/ColorByParticleTypeNames      = 4 "e-" "gamma" "proton" "neutron"
+#sv:Gr/ViewA/ColorByParticleTypeColors     = 4 "red" "yellow" "aqua" "grass"
+#Ts/UseQt = "True"
+
+
+#### WORLD ####
+s:Ge/World/Type = "TsBox"
+d:Ge/World/HLX = 5. mm
+d:Ge/World/HLY = 5. mm
+d:Ge/World/HLZ = 5. mm
+s:Ge/World/Material = "Vacuum"
+
+
+#### GEOMETRY ####
+s:Ge/Capillary/Parent = "World"
+s:Ge/Capillary/Type="TsBioSAXSdosimetry"
+s:Ge/Capillary/Material= "G4_WATER"
+s:Ge/Capillary/Color= "blue"
+s:Ge/Capillary/CapillaryWall/Material= "G4_SILICON_DIOXIDE"
+s:Ge/Capillary/CapillaryWall/Color= "yellow"
+s:Ge/Capillary/TargetSphere/Material="G4_WATER"
+s:Ge/Capillary/TargetSphere/Color= "green"
+d:Ge/Capillary/OuterRadius= 5.0 mm
+d:Ge/Capillary/InnerRadius= 4.0 mm
+d:Ge/Capillary/Length= 8.0 mm
+d:Ge/Capillary/TargetRadius= 200 um
+i:Ge/Capillary/Targets= 2000
+
+
+#### SCORER ####
+#Score dose to the capillary
+#s:Sc/CapillaryScorer/Quantity = "EnergyDeposit"
+s:Sc/CapillaryScorer/Quantity = "DoseToMedium"
+s:Sc/CapillaryScorer/Component = "Capillary"
+b:Sc/CapillaryScorer/OutputToConsole = "True"
+#b:Sc/CapillaryScorer/PropagateToChildren = "true"
+s:Sc/CapillaryScorer/IfOutputFileAlreadyExists = "overwrite"
+s:Sc/CapillaryScorer/OutputFile = "Capillary_Dose_"
+
+
+#Score energy deposited in all components 
+s:Sc/TargetScorer/Quantity = "TargetScorer"
+#b:Sc/TargetScorer/PropagateToChildren = "true"
+s:Sc/TargetScorer/Component = "Capillary"
+s:Sc/TargetScorer/IfOutputFileAlreadyExists = "Overwrite"  #
+s:Sc/TargetScorer/OutputType = "ASCII" 
+i:Sc/TargetScorer/OutputBufferSize = 1000000 
+s:Sc/TargetScorer/OutputFile = "TargetSphere_"
+
+
+
+
+
+
+#### BEAM ####
+
+#define beam position
+s:Ge/BeamPosition/Parent = "World"
+s:Ge/BeamPosition/Type = "Group"
+d:Ge/BeamPosition/TransX = -100. mm
+d:Ge/BeamPosition/TransY = 0. mm
+d:Ge/BeamPosition/TransZ = 0. mm
+#d:Ge/BeamPosition/TransZ =  Ge/World/HLZ mm
+d:Ge/BeamPosition/RotX = 0. deg
+d:Ge/BeamPosition/RotY = 270. deg
+d:Ge/BeamPosition/RotZ = 0. deg
+
+# define beam properties
+s:So/XrayBeam/Type = "Beam" # Beam, Isotropic, Emittance or PhaseSpace
+s:So/XrayBeam/Component = "BeamPosition"
+s:So/XrayBeam/BeamParticle = "gamma"
+d:So/XrayBeam/BeamEnergy = 13 keV  ## diamond synchrotron
+#u:So/XrayBeam/BeamEnergySpread = 0.1 # 0.8eV for 392eV
+s:So/XrayBeam/BeamPositionDistribution = "Flat" # Flat or Gaussian
+s:So/XrayBeam/BeamPositionCutoffShape = "Rectangle" # Point, Ellipse, Rectangle or Isotropic
+d:So/XrayBeam/BeamPositionCutoffX = 0.5 mm #half beam size
+d:So/XrayBeam/BeamPositionCutoffY = 0.125 mm #half beam size
+s:So/XrayBeam/BeamAngularDistribution = "None" # Flat or Gaussian
+i:So/XrayBeam/NumberOfHistoriesInRun = 10000
+#i:So/XrayBeam/NumberOfHistoriesInRun = 100 # for visualization
+
+

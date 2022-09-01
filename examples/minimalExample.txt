@@ -18,13 +18,19 @@ d:Ge/World/HLX = 10. um
 d:Ge/World/HLY = 10. um
 d:Ge/World/HLZ = 10. um
 s:Ge/World/Material = "Vacuum"
+s:Ge/World/Color= "white"
 
 
 #### GEOMETRY ####
 s:Ge/Capillary/Parent = "World"
 s:Ge/Capillary/Type="TsBioSAXSdosimetry"
-s:Ge/Capillary/Material= "G4_SILICON_DIOXIDE"
+s:Ge/Capillary/Material= "Vacuum"
+s:Ge/Capillary/CapillaryWall/Material= "G4_SILICON_DIOXIDE"
+s:Ge/Capillary/CapillaryWall/Color= "yellow"
+s:Ge/Capillary/CapillaryLiquid/Material="G4_WATER"
+s:Ge/Capillary/CapillaryLiquid/Color= "blue"
 s:Ge/Capillary/TargetSphere/Material="G4_WATER"
+s:Ge/Capillary/TargetSphere/Color= "green"
 d:Ge/Capillary/OuterRadius= 5.0 um
 d:Ge/Capillary/InnerRadius= 4.0 um
 d:Ge/Capillary/Length= 8.0 um

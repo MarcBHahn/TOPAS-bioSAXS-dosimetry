@@ -43,6 +43,7 @@ private:
     G4double TargetRadius;
 
     G4RotationMatrix* rotationMatrix;
+    G4ThreeVector* position; 
     
     std::vector<std::vector<G4double> >  TargetCoordinates;
     std::vector<G4double>  tmpCoordinates;
