@@ -36,5 +36,8 @@ d:Ge/Capillary/InnerRadius= 4.0 um
 d:Ge/Capillary/Length= 8.0 um
 d:Ge/Capillary/TargetRadius= 0.1 um
 i:Ge/Capillary/Targets= 100
+# enables a parallel world which makes it possible to place the target spheres with an overlap
+# b:Ge/Capillary/Sphere/IsParallel = "True"  
+
 
 

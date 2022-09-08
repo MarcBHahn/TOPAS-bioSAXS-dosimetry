@@ -50,6 +50,17 @@ void TsBioSAXSdosimetry::ResolveParameters() {
 
     TargetRadius  = fPm->GetDoubleParameter(GetFullParmName("TargetRadius"), "Length");
     NumberOfTargets  = fPm->GetIntegerParameter(GetFullParmName("Targets"));
+    
+    G4String parameterName = "Ge/Capillary/Sphere/IsParallel"; 
+    if(fPm->ParameterExists(parameterName)){
+        TargetSpheresAreParallelComponents = fPm->GetBooleanParameter(parameterName);
+        G4cout<<"Target spheres are scored in a parallel world."<<G4endl;
+
+    }
+    else{
+        G4cout<<"Target spheres are scored normally."<<G4endl;
+        TargetSpheresAreParallelComponents = false;
+    }
 }
 
 
@@ -72,9 +83,9 @@ G4VPhysicalVolume* TsBioSAXSdosimetry::Construct()
     //*******************************
     // Subcomponent: CapillaryWall
     //*******************************
-    G4Tubs* gCapillaryWall = new G4Tubs ("CapillaryWall", CapillaryInnerRadius, CapillaryOuterRadius, CapillaryLength/2.0 , 0.0, CLHEP::twopi);
-    G4LogicalVolume* lCapillaryWall = CreateLogicalVolume("CapillaryWall", gCapillaryWall);
-    G4VPhysicalVolume* pCapillaryWall = CreatePhysicalVolume("CapillaryWall", lCapillaryWall, rotationMatrix, position, fEnvelopePhys);
+    G4Tubs* gWall = new G4Tubs ("Wall", CapillaryInnerRadius, CapillaryOuterRadius, CapillaryLength/2.0 , 0.0, CLHEP::twopi);
+    G4LogicalVolume* lWall = CreateLogicalVolume("Wall", gWall);
+    G4VPhysicalVolume* pWall = CreatePhysicalVolume("Wall", lWall, rotationMatrix, position, fEnvelopePhys);
 
 
     //*******************************
@@ -90,15 +101,15 @@ G4VPhysicalVolume* TsBioSAXSdosimetry::Construct()
     // Subcomponent: TargetSphere
     //*******************************
         
-    G4Orb* gTargetSphere = new G4Orb("TargetSphere", TargetRadius);
-    G4LogicalVolume* lTargetSphere = CreateLogicalVolume("TargetSphere", gTargetSphere);
+    G4Orb* gTargetSphere = new G4Orb("Sphere", TargetRadius);
+    G4LogicalVolume* lTargetSphere = CreateLogicalVolume("Sphere", gTargetSphere);
         
     //Randomly distribute TargetSpheres throughout the capillary volume
     for (int m = 0; m < NumberOfTargets; m++){
             
-        G4cout << "** Add TargetSphere  " << m <<  " **" << G4endl;
+        G4cout << "** Add Sphere  " << m <<  " **" << G4endl;
 
-            G4VPhysicalVolume* pTargetSphere = CreatePhysicalVolume("TargetSphere", m, true, lTargetSphere, rotationMatrix, AddTargetSphereToCapillary(), fEnvelopePhys);
+            G4VPhysicalVolume* pTargetSphere = CreatePhysicalVolume("Sphere", m, true, lTargetSphere, rotationMatrix, AddTargetSphereToCapillary(), fEnvelopePhys);
         }
     
 
@@ -115,8 +126,8 @@ G4ThreeVector* TsBioSAXSdosimetry::AddTargetSphereToCapillary(){
     G4double maxLengthCoordinate = CapillaryLength - 1.001*TargetRadius;
     G4double maxRadiusCoordinate = CapillaryInnerRadius - 1.001*TargetRadius;
 
-    while (true){
-                    
+    if(TargetSpheresAreParallelComponents == true){
+
         G4double r = G4UniformRand() * maxRadiusCoordinate;
         G4double length = G4UniformRand() * maxLengthCoordinate;
         G4double phi = G4UniformRand() * 2.0 * pi;
@@ -124,29 +135,45 @@ G4ThreeVector* TsBioSAXSdosimetry::AddTargetSphereToCapillary(){
         G4double x =  r * std::cos(phi);
         G4double y =  r * std::sin(phi);
         G4double z =  length - (maxLengthCoordinate/2.0);
-        
-        if (CheckOverlapOfSphereWithComponents(TargetCoordinates, TargetRadius,x,y,z)){
-                    G4cout << "*** overlap checked ***" <<G4endl;
 
-            placementAttempts ++;
-            if (placementAttempts > placementAttemptsWarning){
-                G4cerr << "Couldn't find a proper placement position for the current object within "<< placementAttempts <<" attempts. Continuing..."<<  G4endl;
-                placementAttemptsWarning = 2*placementAttemptsWarning;
+        G4ThreeVector* position = new G4ThreeVector(x,y,z);
+        AddCoordinates(TargetCoordinates,TargetRadius,x,y,z);
+        return position;
+
+    }
+
+    else{
+        while (true){
+                    
+            G4double r = G4UniformRand() * maxRadiusCoordinate;
+            G4double length = G4UniformRand() * maxLengthCoordinate;
+            G4double phi = G4UniformRand() * 2.0 * pi;
+                                    
+            G4double x =  r * std::cos(phi);
+            G4double y =  r * std::sin(phi);
+            G4double z =  length - (maxLengthCoordinate/2.0);
+        
+            if (CheckOverlapOfSphereWithComponents(TargetCoordinates, TargetRadius,x,y,z)){
+        
+                placementAttempts ++;
+                if (placementAttempts > placementAttemptsWarning){
+                    G4cerr << "Couldn't find a proper placement position for the current object within "<< placementAttempts <<" attempts. Continuing..."<<  G4endl;
+                    placementAttemptsWarning = 2*placementAttemptsWarning;
+                }
             }
-        }
                 
-        else{
+            else{
             
-            G4ThreeVector* position = new G4ThreeVector(x,y,z);
-            AddCoordinates(TargetCoordinates,TargetRadius,x,y,z);
-            return position;
+                G4ThreeVector* position = new G4ThreeVector(x,y,z);
+                AddCoordinates(TargetCoordinates,TargetRadius,x,y,z);
+                return position;
+            }
         }
    }
 }
 
 
 G4bool TsBioSAXSdosimetry::CheckOverlapOfSphereWithComponents(std::vector<std::vector<G4double> >& Coordinates,G4double r, G4double x, G4double y, G4double z){
-        G4cout << "*** check overlap ***" <<G4endl;
 
     for(int i=0; i<Coordinates.size(); i++){
         
@@ -159,7 +186,7 @@ G4bool TsBioSAXSdosimetry::CheckOverlapOfSphereWithComponents(std::vector<std::v
 
 
 void TsBioSAXSdosimetry::AddCoordinates(std::vector<std::vector<G4double> >& Coordinates, G4double r, G4double x, G4double y, G4double z){
-    G4cout << "*** add coordinates ***" <<G4endl;
+    //G4cout << "*** add coordinates ***" <<G4endl;
     tmpCoordinates[0]=r;
     tmpCoordinates[1]=x;
     tmpCoordinates[2]=y;

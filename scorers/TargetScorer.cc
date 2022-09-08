@@ -41,6 +41,7 @@ G4bool TargetScorer::ProcessHits(G4Step* aStep, G4TouchableHistory*)
     //Find volume name
     G4Track* aTrack = aStep->GetTrack();
     G4String volumeName = aTrack->GetVolume()->GetName();
+    //G4cout<<aTrack->GetVolume()->GetName();
     
     
     //Score events that deposit energy in the cell and it's organelles:

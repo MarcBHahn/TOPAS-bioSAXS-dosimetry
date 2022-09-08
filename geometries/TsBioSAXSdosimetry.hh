@@ -41,6 +41,7 @@ private:
     G4double CapillaryLength;
     G4int NumberOfTargets;
     G4double TargetRadius;
+    G4bool TargetSpheresAreParallelComponents;
 
     G4RotationMatrix* rotationMatrix;
     G4ThreeVector* position; 

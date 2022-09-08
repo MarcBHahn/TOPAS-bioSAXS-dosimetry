@@ -1,93 +1,65 @@
 #### GENERAL ####
 i:Ts/Seed =  1  #starting random seed 
-i:Ts/NumberOfThreads = 1
+i:Ts/NumberOfThreads = -1 # -1 
 b:Ts/DumpParameters = "True" 
-Ts/PauseBeforeQuit = "True"
-
-####  PHYSICS ####
-
-b:Ph/ListProcesses = "True"
-s:Ph/MyPhysics/Type = "Geant4_Modular"
-sv:Ph/MyPhysics/Modules = 1 "g4em-livermore"    #"g4h-phy_QGSP_BIC_HP" "g4decay" "g4ion-binarycascade" "g4h-elastic_HP" "g4stopping"
-b:Ph/MyPhysics/Fluorescence = "True" # Set to true to turn on Fluorescence
-b:Ph/MyPhysics/Auger = "True" # Set to true to turn on Auger
-b:Ph/MyPhysics/AugerCascade = "True" # Set to true to turn on PIXE
-b:Ph/MyPhysics/PIXE = "True" # Set to true to turn on PIXE
-d:Ph/MyPhysics/CutForAllParticles = 1000 nm 
-
-
-
-#### GUI ####
-#s:Gr/ViewA/Type             = "OpenGL"
-#s:Gr/ViewA/CenterOn = "Capillary"
-#i:Gr/ViewA/WindowSizeX      = 1800  
-#i:Gr/ViewA/WindowSizeY      = 1000
-#d:Gr/ViewA/Theta            = 55 deg
-#d:Gr/ViewA/Phi              = 35 deg
-#s:Gr/ViewA/Projection       = "Perspective"
-#d:Gr/ViewA/PerspectiveAngle = 30 deg
-#u:Gr/ViewA/Zoom             = 1.0
-#b:Gr/ViewA/HiddenLineRemovalForTrajectories = "True"
-#b:Gr/ViewA/IncludeAxes = "True" # defaults to "False"
-#s:Gr/ViewA/AxesComponent = "World" 
-#d:Gr/ViewA/AxesSize = 2. mm # size of axes
-#s:Gr/ViewA/ColorBy     = "ParticleType"
-#sv:Gr/ViewA/ColorByParticleTypeNames      = 4 "e-" "gamma" "proton" "neutron"
-#sv:Gr/ViewA/ColorByParticleTypeColors     = 4 "red" "yellow" "aqua" "grass"
-#Ts/UseQt = "True"
+i:Ts/ShowHistoryCountAtInterval = 10000 
+#b:Ts/PauseBeforeQuit = "True"
 
 
 #### WORLD ####
 s:Ge/World/Type = "TsBox"
-d:Ge/World/HLX = 5. mm
-d:Ge/World/HLY = 5. mm
-d:Ge/World/HLZ = 5. mm
+d:Ge/World/HLX = 1 mm 
+d:Ge/World/HLY = 1 mm 
+d:Ge/World/HLZ = 1 mm 
 s:Ge/World/Material = "Vacuum"
+
+####  PHYSICS ####
+s:Ph/ListName = "MyPhysics"
+b:Ph/ListProcesses = "True"
+s:Ph/MyPhysics/Type = "Geant4_Modular"
+#sv:Ph/MyPhysics/Modules = 1 "g4em-dna_opt4" #"g4em-livermore" "g4em-dna"   #"g4h-phy_QGSP_BIC_HP" "g4decay" "g4ion-binarycascade" "g4h-elastic_HP" "g4stopping"
+b:Ph/MyPhysics/Fluorescence = "True" # Set to true to turn on Fluorescence
+b:Ph/MyPhysics/Auger = "True" # Set to true to turn on Auger
+b:Ph/MyPhysics/AugerCascade = "True" # Set to true to turn on PIXE
+b:Ph/MyPhysics/PIXE = "True" # Set to true to turn on PIXE
+d:Ph/MyPhysics/CutForAllParticles = 1 um 
+
+
+# Define condensed-history em model everywhere
+sv:Ph/MyPhysics/Modules = 1 "g4em-livermore"
+# for flexibility, in case we want switch the model locally in the targetsphere
+s:Ph/MyPhysics/ForRegion/Capillary/ActiveG4EmModelFromModule = "g4em-livermore" 
+s:Ph/MyPhysics/AssignToRegionNamed = "livermore"
+# But geant4-dna in the G4DNA region, meaning the target spheres
+s:Ph/MyPhysics/ForRegion/g4dna/ActiveG4EmModelFromModule = "g4em-dna"
 
 
 #### GEOMETRY ####
 s:Ge/Capillary/Parent = "World"
 s:Ge/Capillary/Type="TsBioSAXSdosimetry"
 s:Ge/Capillary/Material= "G4_WATER"
+s:Ge/Capillary/AssignToRegionNamed = "g4dna"
+
+s:Ge/Capillary/Wall/Material= "G4_SILICON_DIOXIDE"
+s:Ge/Capillary/Wall/AssignToRegionNamed = "livermore"
+
+s:Ge/Capillary/Sphere/Material="G4_WATER"
+s:Ge/Capillary/Sphere/AssignToRegionNamed = "g4dna"
+
+# enables a parallel world which makes it possible to place the target spheres with an overlap
+b:Ge/Capillary/Sphere/IsParallel = "True"
+
 s:Ge/Capillary/Color= "blue"
-s:Ge/Capillary/CapillaryWall/Material= "G4_SILICON_DIOXIDE"
-s:Ge/Capillary/CapillaryWall/Color= "yellow"
-s:Ge/Capillary/TargetSphere/Material="G4_WATER"
-s:Ge/Capillary/TargetSphere/Color= "green"
-d:Ge/Capillary/OuterRadius= 5.0 mm
-d:Ge/Capillary/InnerRadius= 4.0 mm
-d:Ge/Capillary/Length= 8.0 mm
-d:Ge/Capillary/TargetRadius= 200 um
-i:Ge/Capillary/Targets= 2000
-
-
-#### SCORER ####
-#Score dose to the capillary
-#s:Sc/CapillaryScorer/Quantity = "EnergyDeposit"
-s:Sc/CapillaryScorer/Quantity = "DoseToMedium"
-s:Sc/CapillaryScorer/Component = "Capillary"
-b:Sc/CapillaryScorer/OutputToConsole = "True"
-#b:Sc/CapillaryScorer/PropagateToChildren = "true"
-s:Sc/CapillaryScorer/IfOutputFileAlreadyExists = "overwrite"
-s:Sc/CapillaryScorer/OutputFile = "Capillary_Dose_"
-
-
-#Score energy deposited in all components 
-s:Sc/TargetScorer/Quantity = "TargetScorer"
-#b:Sc/TargetScorer/PropagateToChildren = "true"
-s:Sc/TargetScorer/Component = "Capillary"
-s:Sc/TargetScorer/IfOutputFileAlreadyExists = "Overwrite"  #
-s:Sc/TargetScorer/OutputType = "ASCII" 
-i:Sc/TargetScorer/OutputBufferSize = 1000000 
-s:Sc/TargetScorer/OutputFile = "TargetSphere_"
-
-
-
-
+s:Ge/Capillary/Wall/Color= "white"
+s:Ge/Capillary/Sphere/Color="green"
+d:Ge/Capillary/OuterRadius= 0.85 mm
+d:Ge/Capillary/InnerRadius= 0.75 mm
+d:Ge/Capillary/Length= 1 mm
+d:Ge/Capillary/TargetRadius= 253 um
+i:Ge/Capillary/Targets= 1000
 
 
 #### BEAM ####
-
 #define beam position
 s:Ge/BeamPosition/Parent = "World"
 s:Ge/BeamPosition/Type = "Group"
@@ -110,7 +82,47 @@ s:So/XrayBeam/BeamPositionCutoffShape = "Rectangle" # Point, Ellipse, Rectangle 
 d:So/XrayBeam/BeamPositionCutoffX = 0.5 mm #half beam size
 d:So/XrayBeam/BeamPositionCutoffY = 0.125 mm #half beam size
 s:So/XrayBeam/BeamAngularDistribution = "None" # Flat or Gaussian
-i:So/XrayBeam/NumberOfHistoriesInRun = 10000
-#i:So/XrayBeam/NumberOfHistoriesInRun = 100 # for visualization
+i:So/XrayBeam/NumberOfHistoriesInRun = 1000000
+#i:So/XrayBeam/NumberOfHistoriesInRun = 1 # for visualization
+
+#### SCORER ####
+#Score dose to the capillary
+#s:Sc/CapillaryScorer/Quantity = "EnergyDeposit"
+s:Sc/CapillaryScorer/Quantity = "DoseToMedium"
+s:Sc/CapillaryScorer/Component = "Capillary"
+b:Sc/CapillaryScorer/OutputToConsole = "True"
+b:Sc/CapillaryScorer/PropagateToChildren = "true"
+s:Sc/CapillaryScorer/IfOutputFileAlreadyExists = "overwrite"
+s:Sc/CapillaryScorer/OutputFile = "Capillary_Dose_"
+
+#Score energy deposited in all components 
+s:Sc/TargetScorer/Quantity = "TargetScorer"
+b:Sc/TargetScorer/PropagateToChildren = "true"
+s:Sc/TargetScorer/Component = "Capillary"
+s:Sc/TargetScorer/IfOutputFileAlreadyExists = "Overwrite"  #
+s:Sc/TargetScorer/OutputType = "ASCII" 
+i:Sc/TargetScorer/OutputBufferSize = 10000 
+s:Sc/TargetScorer/OutputFile = "TargetSphere_"
+
+
+####  GUI  ####
+#b:Ts/UseQt = "True"
+#s:Gr/ViewA/Type             = "OpenGL"
+#s:Gr/ViewA/CenterOn = "Capillary"
+#i:Gr/ViewA/WindowSizeX      = 1800  
+#i:Gr/ViewA/WindowSizeY      = 1000
+#d:Gr/ViewA/Theta            = 55 deg
+#d:Gr/ViewA/Phi              = 35 deg
+#s:Gr/ViewA/Projection       = "Perspective"
+#d:Gr/ViewA/PerspectiveAngle = 30 deg
+#u:Gr/ViewA/Zoom             = 1.0
+#b:Gr/ViewA/HiddenLineRemovalForTrajectories = "True"
+#b:Gr/ViewA/IncludeAxes = "True" # defaults to "False"
+#s:Gr/ViewA/AxesComponent = "World" 
+#d:Gr/ViewA/AxesSize = 2. mm # size of axes
+#s:Gr/ViewA/ColorBy     = "ParticleType"
+#sv:Gr/ViewA/ColorByParticleTypeNames      = 4 "e-" "gamma" "proton" "neutron"
+#sv:Gr/ViewA/ColorByParticleTypeColors     = 4 "red" "yellow" "aqua" "grass"
+
 
 
