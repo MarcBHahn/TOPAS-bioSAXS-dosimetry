@@ -6,9 +6,9 @@
 // * agreement set forth at: https://topas-nbio.readthedocs.io/       *
 // *                                                                  *
 // ********************************************************************
-// *  Modifications by Marc B. Hahn (2020)                            *
+// *  Modifications by Marc B. Hahn (2022)                            *
 // *  Please report bugs to hahn@physiks.fu-berlin.de                 *
-// *  or on https://github.com/BAMresearch/TOPAS-CellModels           *
+// *  or on https://github.com/MarcBHahn/TOPAS-bioSAXS-dosimetry           *
 // ********************************************************************
 //
 // Tuple scorer for scoring energy deposited in the cell organelles

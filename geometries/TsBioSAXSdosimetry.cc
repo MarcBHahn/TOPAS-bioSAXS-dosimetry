@@ -186,12 +186,13 @@ G4bool TsBioSAXSdosimetry::CheckOverlapOfSphereWithComponents(std::vector<std::v
 
 
 void TsBioSAXSdosimetry::AddCoordinates(std::vector<std::vector<G4double> >& Coordinates, G4double r, G4double x, G4double y, G4double z){
-    //G4cout << "*** add coordinates ***" <<G4endl;
+
     tmpCoordinates[0]=r;
     tmpCoordinates[1]=x;
     tmpCoordinates[2]=y;
     tmpCoordinates[3]=z;
     Coordinates.push_back(tmpCoordinates);
+    
 }
 
 
